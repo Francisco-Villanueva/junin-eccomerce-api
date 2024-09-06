@@ -8,11 +8,12 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('login')
-  async login(@Body() { email, password }: LoginAuthDto) {
+  async login(@Body() data: LoginAuthDto) {
+    const { email, password } = data;
     const userValidate = await this.authService.validateUser(email, password);
 
     if (!userValidate) {
-      throw new UnauthorizedException('Data not valid');
+      throw new UnauthorizedException('Invalid Credenteials!');
     }
 
     const jwt = await this.authService.generateJWT(userValidate);

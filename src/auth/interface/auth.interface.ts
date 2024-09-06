@@ -12,8 +12,8 @@ export const PayloadTokenSchema = z.object({
 });
 
 export const AuthBodySchema = z.object({
-  email: z.string(),
-  password: z.string(),
+  email: z.string().min(1),
+  password: z.string().min(1),
 });
 
 export const AuthResponseSchema = z.object({

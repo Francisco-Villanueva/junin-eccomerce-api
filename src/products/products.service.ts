@@ -1,40 +1,58 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import axios from 'axios';
 import { Product } from './schema/product.schema';
 import { CreateProductDto } from './dto/product.dto';
-import { InjectModel } from '@nestjs/sequelize';
-import { PRODUCT_REPOSITORY } from 'src/database/constants';
 
 @Injectable()
 export class ProductsService {
-  constructor(
-    @Inject(PRODUCT_REPOSITORY)
-    private readonly productModel: typeof Product,
-  ) {}
-
-  async findAll(): Promise<Product[]> {
-    return this.productModel.findAll();
+  private readonly axiosInstance = axios.create({
+    baseURL: process.env.API_URL,
+  });
+  async findAll(limit: number, skip: number): Promise<Product[]> {
+    const response = await this.axiosInstance.get(
+      `/products?${limit ? `limit=${limit}` : null}&${skip ? `skip=${skip}` : null}`,
+    );
+    return response.data;
+  }
+  async search(search: string): Promise<Product[]> {
+    const response = await this.axiosInstance.get(
+      `/products/search?q=${search}`,
+    );
+    return response.data;
   }
 
   async findOne(id: string): Promise<Product> {
-    return this.productModel.findOne({ where: { id } });
+    const response = await this.axiosInstance.get(`/products/${id}`);
+    return response.data;
   }
 
   async create(createProductDto: CreateProductDto): Promise<Product> {
-    return await this.productModel.create(createProductDto);
+    // Assuming the API endpoint for creating a product is not provided
+    // This is a placeholder for the actual implementation
+    throw new Error('Method not implemented.');
   }
 
   async update(id: string, data: CreateProductDto): Promise<Product> {
-    const [affectedRows, updatedProduct] = await this.productModel.update(
-      data,
-      { where: { id }, returning: true },
-    );
-    if (affectedRows === 0) {
-      throw new Error('Product not found');
-    }
-    return updatedProduct[0];
+    // Assuming the API endpoint for updating a product is not provided
+    // This is a placeholder for the actual implementation
+    throw new Error('Method not implemented.');
   }
 
   async remove(id: string): Promise<void> {
-    await this.productModel.destroy({ where: { id } });
+    // Assuming the API endpoint for removing a product is not provided
+    // This is a placeholder for the actual implementation
+    throw new Error('Method not implemented.');
+  }
+
+  async getCategories(): Promise<string[]> {
+    const response = await this.axiosInstance.get('/products/categories');
+    return response.data;
+  }
+
+  async getProductsByCategory(category: string): Promise<Product[]> {
+    const response = await this.axiosInstance.get(
+      `/products/category/${category}`,
+    );
+    return response.data;
   }
 }

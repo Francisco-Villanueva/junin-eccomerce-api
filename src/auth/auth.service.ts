@@ -19,6 +19,13 @@ export class AuthService {
   ) {}
 
   public async register(user: CreateUserDTO) {
+    const existingUser = await this.userService.findByEmail(user.email);
+    if (existingUser) {
+      throw new NotFoundException(
+        `User with email ${user.email} already exists`,
+      );
+    }
+
     const hashPassword = await bcrypt.hash(user.password, 10);
     const data: CreateUserDTO = {
       ...user,
