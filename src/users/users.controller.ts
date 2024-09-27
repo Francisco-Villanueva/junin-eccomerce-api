@@ -1,4 +1,11 @@
-import { Controller, Post, Body, HttpCode, HttpStatus } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  HttpCode,
+  HttpStatus,
+  Get,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDTO, CreateUserSchema } from './dto/create-user.dto';
 
@@ -6,6 +13,14 @@ import { CreateUserDTO, CreateUserSchema } from './dto/create-user.dto';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @Get()
+  async getAllUsers() {
+    try {
+      return await this.usersService.getAll();
+    } catch (error) {
+      return error;
+    }
+  }
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
   async register(@Body() body: CreateUserDTO) {
